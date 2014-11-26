@@ -161,6 +161,7 @@ public abstract class Mundo extends Objeto {
 
     try {
 
+      // TODO: Separar o processo de update dos elementos do print.
       this.getObjSpriteBatch().begin();
 
       for (Elemento elm : this.getLstElm()) {
