@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
 import com.digosofter.digojava.App;
 import com.digosofter.digojava.Objeto;
 import com.digosofter.digojava.erro.Erro;
@@ -21,6 +23,7 @@ public abstract class Mundo extends Objeto {
   private List<Elemento> _lstElm;
   private ShapeRenderer _objShapeRendererDebug;
   private SpriteBatch _objSpriteBatch;
+  private World _objWorld;
 
   public List<Elemento> getLstElm() {
 
@@ -82,6 +85,27 @@ public abstract class Mundo extends Objeto {
     }
 
     return _objSpriteBatch;
+  }
+
+  public World getObjWorld() {
+
+    try {
+
+      if (_objWorld != null) {
+
+        return _objWorld;
+      }
+
+      _objWorld = new World(new Vector2(0, -98f), true);
+
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+
+    return _objWorld;
   }
 
   public void inicializar() {
@@ -162,6 +186,7 @@ public abstract class Mundo extends Objeto {
     try {
 
       // TODO: Separar o processo de update dos elementos do print.
+      this.getObjWorld().step(Gdx.graphics.getDeltaTime(), 6, 2);
       this.getObjSpriteBatch().begin();
 
       for (Elemento elm : this.getLstElm()) {
