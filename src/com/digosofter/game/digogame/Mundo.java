@@ -134,8 +134,7 @@ public abstract class Mundo extends Objeto implements Disposable {
       }
 
       _objCamera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-      // _objCamera.position.set(Gdx.graphics.getWidth() / 2,
-      // Gdx.graphics.getHeight() / 2, 0);
+      _objCamera.position.set(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, 0);
     }
     catch (Exception ex) {
       new Erro("Erro inesperado.\n", ex);
