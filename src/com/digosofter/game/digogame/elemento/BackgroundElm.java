@@ -1,21 +1,17 @@
 package com.digosofter.game.digogame.elemento;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.digosofter.digojava.Utils;
 import com.digosofter.digojava.erro.Erro;
 import com.digosofter.game.digogame.Mundo;
 
-public class BackgroundElm extends Elemento {
+public abstract class BackgroundElm extends Elemento {
 
   private boolean _booRepeteX;
-
   private boolean _booRepeteY;
   private String _dirImagem;
   private Image _img;
-
-  private Texture _objTexture;
 
   public BackgroundElm(Mundo objMundo) {
 
@@ -57,26 +53,6 @@ public class BackgroundElm extends Elemento {
     }
 
     return _img;
-  }
-
-  private Texture getObjTexture() {
-
-    try {
-
-      if (_objTexture != null) {
-
-        return _objTexture;
-      }
-
-      _objTexture = new Texture(Gdx.files.internal(this.getDirImagem()));
-    }
-    catch (Exception ex) {
-      new Erro("Erro inesperado.\n", ex);
-    }
-    finally {
-    }
-
-    return _objTexture;
   }
 
   @Override

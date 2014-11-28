@@ -2,8 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/gdx.jar"/>
+	<classpathentry kind="lib" path="lib/gdx.jar" sourcepath="D:/Projetos/LibGdx/sources/gdx-sources.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DigoJava"/>
-	<classpathentry kind="lib" path="lib/gdx-box2d-1.4.1.jar"/>
+	<classpathentry kind="lib" path="lib/gdx-box2d.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
