@@ -15,7 +15,7 @@ public abstract class BackgroundElm extends Elemento {
 
   public BackgroundElm(Mundo objMundo) {
 
-    super(objMundo);
+    super(objMundo, 0, 0);
   }
 
   private boolean getBooRepeteX() {

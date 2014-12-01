@@ -5,9 +5,9 @@ import com.digosofter.game.digogame.elemento.Elemento;
 
 public abstract class PersonagemElm extends Elemento {
 
-  public PersonagemElm(Mundo objMundo) {
+  public PersonagemElm(Mundo objMundo, int intPosX, int intPosY) {
 
-    super(objMundo);
+    super(objMundo, intPosX, intPosY);
   }
 
 }

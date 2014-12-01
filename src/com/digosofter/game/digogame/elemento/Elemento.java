@@ -8,7 +8,64 @@ import com.digosofter.game.digogame.Mundo;
 
 public abstract class Elemento extends Objeto implements Disposable {
 
+  private boolean _booDinamico;
+  private int _intPosX;
+  private int _intPosY;
+  private Mundo _objMundo;
   private Texture _objTexture;
+
+  public Elemento(Mundo objMundo, int intPosX, int intPosY) {
+
+    try {
+
+      this.setObjMundo(objMundo);
+
+      this.getObjMundo().getLstElm().add(this);
+      this.setIntPosX(intPosX);
+      this.setIntPosY(intPosY);
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
+  @Override
+  public void dispose() {
+
+    try {
+
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+
+  }
+
+  public boolean getBooDinamico() {
+
+    return _booDinamico;
+  }
+
+  protected abstract String getDirTexture();
+
+  protected int getIntPosX() {
+
+    return _intPosX;
+  }
+
+  protected int getIntPosY() {
+
+    return _intPosY;
+  }
+
+  protected Mundo getObjMundo() {
+
+    return _objMundo;
+  }
 
   protected Texture getObjTexture() {
 
@@ -28,49 +85,6 @@ public abstract class Elemento extends Objeto implements Disposable {
     }
 
     return _objTexture;
-  }
-
-  protected abstract String getDirTexture();
-
-  @Override
-  public void dispose() {
-
-    try {
-
-    }
-    catch (Exception ex) {
-      new Erro("Erro inesperado.\n", ex);
-    }
-    finally {
-    }
-
-  }
-
-  private boolean _booDinamico;
-  private Mundo _objMundo;
-
-  public Elemento(Mundo objMundo) {
-
-    try {
-
-      this.setObjMundo(objMundo);
-      this.getObjMundo().getLstElm().add(this);
-    }
-    catch (Exception ex) {
-      new Erro("Erro inesperado.\n", ex);
-    }
-    finally {
-    }
-  }
-
-  public boolean getBooDinamico() {
-
-    return _booDinamico;
-  }
-
-  protected Mundo getObjMundo() {
-
-    return _objMundo;
   }
 
   public void inicializar() {
@@ -112,6 +126,32 @@ public abstract class Elemento extends Objeto implements Disposable {
         this.getObjMundo().getLstElmDinamico().remove(this);
       }
 
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
+  private void setIntPosX(int intPosX) {
+
+    try {
+
+      _intPosX = intPosX * Mundo.INT_TAMANHO_BASICO;
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
+  private void setIntPosY(int intPosY) {
+
+    try {
+
+      _intPosY = intPosY * Mundo.INT_TAMANHO_BASICO;
     }
     catch (Exception ex) {
       new Erro("Erro inesperado.\n", ex);

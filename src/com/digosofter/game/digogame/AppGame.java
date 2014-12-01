@@ -2,6 +2,7 @@ package com.digosofter.game.digogame;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.digosofter.digojava.App;
@@ -68,6 +69,27 @@ public abstract class AppGame extends App implements ApplicationListener {
 
     return _corBkg;
   }
+
+  @Override
+  public void dispose() {
+
+  }
+
+  @Override
+  public void create() {
+
+    try {
+
+      Gdx.input.setInputProcessor(this.getObjControle());
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
+  protected abstract InputProcessor getObjControle();
 
   @Override
   public void render() {
