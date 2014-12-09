@@ -99,7 +99,7 @@ public abstract class Elemento extends Objeto implements Disposable {
     }
   }
 
-  public void print() {
+  public void render() {
 
     try {
 

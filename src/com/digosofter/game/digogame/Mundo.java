@@ -31,7 +31,7 @@ public abstract class Mundo extends Objeto implements Disposable {
   public final static int INT_TAMANHO_BASICO = 25;
 
   private float _fltGravidadeX;
-  private float _fltGravidadeY = -9.8f;
+  private float _fltGravidadeY = -10f;
   private List<Elemento> _lstElm;
   private List<Elemento> _lstElmDinamico;
   private Box2DDebugRenderer _objBox2dDebugRenderer;
@@ -453,12 +453,12 @@ public abstract class Mundo extends Objeto implements Disposable {
 
   }
 
-  public void print() {
+  public void render() {
 
     try {
 
-      this.printMap();
-      this.printElementos();
+      this.renderMap();
+      this.renderElementos();
       this.montarLayoutDebug();
     }
     catch (Exception ex) {
@@ -468,7 +468,7 @@ public abstract class Mundo extends Objeto implements Disposable {
     }
   }
 
-  private void printElementos() {
+  private void renderElementos() {
 
     try {
 
@@ -476,7 +476,7 @@ public abstract class Mundo extends Objeto implements Disposable {
 
       for (Elemento elm : this.getLstElm()) {
 
-        elm.print();
+        elm.render();
       }
 
       this.getObjSpriteBatch().end();
@@ -488,7 +488,7 @@ public abstract class Mundo extends Objeto implements Disposable {
     }
   }
 
-  private void printMap() {
+  private void renderMap() {
 
     try {
 
