@@ -1,6 +1,8 @@
 package com.digosofter.game.digogame.elemento;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.digosofter.digojava.Utils;
 import com.digosofter.digojava.erro.Erro;
@@ -15,7 +17,7 @@ public abstract class BackgroundElm extends Elemento {
 
   public BackgroundElm(Mundo objMundo) {
 
-    super(objMundo, 0, 0);
+    super(objMundo, new Vector2());
   }
 
   private boolean getBooRepeteX() {
@@ -107,13 +109,13 @@ public abstract class BackgroundElm extends Elemento {
   }
 
   @Override
-  public void update() {
+  public void render(SpriteBatch objSpriteBatch) {
 
-    super.update();
+    super.render(objSpriteBatch);
 
     try {
 
-      this.getImg().draw(this.getObjMundo().getObjSpriteBatch(), 1);
+      this.getImg().draw(objSpriteBatch, 1);
     }
     catch (Exception ex) {
       new Erro("Erro inesperado.\n", ex);

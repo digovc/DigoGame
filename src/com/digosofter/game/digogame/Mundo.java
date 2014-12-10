@@ -6,17 +6,15 @@ import java.util.List;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Box2D;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -27,23 +25,33 @@ import com.digosofter.game.digogame.elemento.Elemento;
 
 public abstract class Mundo extends Objeto implements Disposable {
 
-  public final static float FLT_PIXELS_TO_METERS = 100;
-  public final static int INT_TAMANHO_BASICO = 25;
+  public final static int INT_TAMANHO_BASICO = 32;
 
-  private float _fltGravidadeX;
-  private float _fltGravidadeY = -10f;
+  private boolean _booAplicarFisica;
   private List<Elemento> _lstElm;
   private List<Elemento> _lstElmDinamico;
-  private Box2DDebugRenderer _objBox2dDebugRenderer;
   private OrthographicCamera _objCamera;
-  private Matrix4 _objMatrix4;
+  private ShapeRenderer _objShapeRenderDebug;
   private SpriteBatch _objSpriteBatch;
   private TiledMap _objTiledMap;
   private TiledMapRenderer _objTiledMapRenderer;
   private TiledMapTileLayer _objTiledMapTileLayerDinamica;
   private TiledMapTileLayer _objTiledMapTileLayerFixa;
   private Viewport _objViewport;
-  private World _objWorld;
+  private Vector2 _vctGravidade;
+
+  public Mundo(Vector2 vctGravidade) {
+
+    try {
+
+      this.setVctGravidade(vctGravidade);
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
 
   @Override
   public void dispose() {
@@ -55,9 +63,7 @@ public abstract class Mundo extends Objeto implements Disposable {
         elm.dispose();
       }
 
-      this.getObjBox2dDebugRenderer().dispose();
       this.getObjSpriteBatch().dispose();
-      this.getObjWorld().dispose();
     }
     catch (Exception ex) {
       new Erro("Erro inesperado.\n", ex);
@@ -67,17 +73,12 @@ public abstract class Mundo extends Objeto implements Disposable {
 
   }
 
+  public boolean getBooAplicarFisica() {
+
+    return _booAplicarFisica;
+  }
+
   protected abstract String getDirTmxMap();
-
-  private float getFltGravidadeX() {
-
-    return _fltGravidadeX;
-  }
-
-  private float getFltGravidadeY() {
-
-    return _fltGravidadeY;
-  }
 
   public List<Elemento> getLstElm() {
 
@@ -119,26 +120,6 @@ public abstract class Mundo extends Objeto implements Disposable {
     return _lstElmDinamico;
   }
 
-  private Box2DDebugRenderer getObjBox2dDebugRenderer() {
-
-    try {
-
-      if (_objBox2dDebugRenderer != null) {
-
-        return _objBox2dDebugRenderer;
-      }
-
-      _objBox2dDebugRenderer = new Box2DDebugRenderer();
-    }
-    catch (Exception ex) {
-      new Erro("Erro inesperado.\n", ex);
-    }
-    finally {
-    }
-
-    return _objBox2dDebugRenderer;
-  }
-
   protected OrthographicCamera getObjCamera() {
 
     try {
@@ -160,12 +141,27 @@ public abstract class Mundo extends Objeto implements Disposable {
     return _objCamera;
   }
 
-  private Matrix4 getObjMatrix4() {
+  private ShapeRenderer getObjShapeRenderDebug() {
 
-    return _objMatrix4;
+    try {
+
+      if (_objShapeRenderDebug != null) {
+
+        return _objShapeRenderDebug;
+      }
+
+      _objShapeRenderDebug = new ShapeRenderer();
+      _objShapeRenderDebug.setColor(0, 0, 1, 0);
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+    return _objShapeRenderDebug;
   }
 
-  public SpriteBatch getObjSpriteBatch() {
+  protected SpriteBatch getObjSpriteBatch() {
 
     try {
 
@@ -276,7 +272,7 @@ public abstract class Mundo extends Objeto implements Disposable {
         return _objViewport;
       }
 
-      _objViewport = new StretchViewport(400, 240, this.getObjCamera());
+      _objViewport = new StretchViewport(16 * Mundo.INT_TAMANHO_BASICO, 10 * Mundo.INT_TAMANHO_BASICO, this.getObjCamera());
     }
     catch (Exception ex) {
       new Erro("Erro inesperado.\n", ex);
@@ -287,17 +283,16 @@ public abstract class Mundo extends Objeto implements Disposable {
     return _objViewport;
   }
 
-  public World getObjWorld() {
+  protected Vector2 getVctGravidade() {
 
     try {
 
-      if (_objWorld != null) {
+      if (_vctGravidade != null) {
 
-        return _objWorld;
+        return _vctGravidade;
       }
 
-      _objWorld = new World(new Vector2(this.getFltGravidadeX(), this.getFltGravidadeY()), true);
-
+      _vctGravidade = new Vector2(0, -10);
     }
     catch (Exception ex) {
       new Erro("Erro inesperado.\n", ex);
@@ -305,14 +300,13 @@ public abstract class Mundo extends Objeto implements Disposable {
     finally {
     }
 
-    return _objWorld;
+    return _vctGravidade;
   }
 
   public void inicializar() {
 
     try {
 
-      Box2D.init();
       this.inicializarMap();
     }
     catch (Exception ex) {
@@ -330,6 +324,9 @@ public abstract class Mundo extends Objeto implements Disposable {
 
     try {
 
+      // TODO: Inicializar os componentes a medida que forem sendo necessários.
+      // Do jeito que está ele inicializa todos os blocos do mapa, fazendo uso
+      // de muita memória.
       this.inicializarMapCmdAmbiente();
       this.inicializarMapCmdFixa();
       this.inicializarMapCmdDinamica();
@@ -404,44 +401,10 @@ public abstract class Mundo extends Objeto implements Disposable {
     }
   }
 
-  private void montarLayoutBox2d() {
-
-    try {
-
-      this.getObjBox2dDebugRenderer().render(this.getObjWorld(), this.getObjMatrix4());
-    }
-    catch (Exception ex) {
-      new Erro("Erro inesperado.\n", ex);
-    }
-    finally {
-    }
-
-  }
-
-  private void montarLayoutDebug() {
-
-    try {
-
-      if (!App.getI().getBooDebug()) {
-
-        return;
-      }
-
-      this.montarLayoutDebugFps();
-      this.montarLayoutBox2d();
-    }
-    catch (Exception ex) {
-      new Erro("Erro inesperado.\n", ex);
-    }
-    finally {
-    }
-  }
-
   private void montarLayoutDebugFps() {
 
     try {
 
-      // TODO: Mostrar FPS na tela.
       System.out.println("FPS: " + Gdx.graphics.getFramesPerSecond());
 
     }
@@ -459,7 +422,7 @@ public abstract class Mundo extends Objeto implements Disposable {
 
       this.renderMap();
       this.renderElementos();
-      this.montarLayoutDebug();
+      this.renderDebug();
     }
     catch (Exception ex) {
       new Erro("Erro inesperado.\n", ex);
@@ -476,10 +439,49 @@ public abstract class Mundo extends Objeto implements Disposable {
 
       for (Elemento elm : this.getLstElm()) {
 
-        elm.render();
+        elm.render(this.getObjSpriteBatch());
       }
 
       this.getObjSpriteBatch().end();
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
+  private void renderElementosDebug() {
+
+    try {
+
+      this.getObjShapeRenderDebug().begin(ShapeType.Line);
+
+      for (Elemento elm : this.getLstElm()) {
+
+        elm.renderDebug(this.getObjShapeRenderDebug());
+      }
+
+      this.getObjShapeRenderDebug().end();
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
+  protected void renderDebug() {
+
+    try {
+
+      if (!App.getI().getBooDebug()) {
+
+        return;
+      }
+
+      this.montarLayoutDebugFps();
+      this.renderElementosDebug();
     }
     catch (Exception ex) {
       new Erro("Erro inesperado.\n", ex);
@@ -516,19 +518,15 @@ public abstract class Mundo extends Objeto implements Disposable {
     }
   }
 
-  protected void setFltGravidadeX(float fltGravidadeX) {
+  protected void setBooAplicarFisica(boolean booAplicarFisica) {
 
-    _fltGravidadeX = fltGravidadeX;
+    _booAplicarFisica = booAplicarFisica;
   }
 
-  protected void setFltGravidadeY(float fltGravidadeY) {
+  private void setVctGravidade(Vector2 vctGravidade) {
 
-    _fltGravidadeY = fltGravidadeY;
-  }
+    _vctGravidade = vctGravidade;
 
-  private void setObjMatrix4(Matrix4 objMatrix4) {
-
-    _objMatrix4 = objMatrix4;
   }
 
   public void update() {
@@ -555,6 +553,11 @@ public abstract class Mundo extends Objeto implements Disposable {
     try {
 
       this.getObjCamera().update();
+
+      if (AppGame.getI().getBooDebug()) {
+
+        this.getObjShapeRenderDebug().setProjectionMatrix(this.getObjCamera().combined);
+      }
     }
     catch (Exception ex) {
       new Erro("Erro inesperado.\n", ex);
@@ -563,13 +566,11 @@ public abstract class Mundo extends Objeto implements Disposable {
     }
   }
 
-  private void updateDiverso() {
+  protected void updateDiverso() {
 
     try {
 
       this.getObjSpriteBatch().setProjectionMatrix(this.getObjCamera().combined);
-      this.setObjMatrix4(this.getObjSpriteBatch().getProjectionMatrix().cpy().scale(Mundo.FLT_PIXELS_TO_METERS, Mundo.FLT_PIXELS_TO_METERS, 0));
-      this.getObjWorld().step(Gdx.graphics.getDeltaTime(), 6, 2);
     }
     catch (Exception ex) {
       new Erro("Erro inesperado.\n", ex);
