@@ -58,6 +58,54 @@ public abstract class Mundo extends Objeto implements Disposable {
     }
   }
 
+  public void addElmento(Elemento elm) {
+
+    try {
+
+      if (elm == null) {
+
+        return;
+      }
+
+      if (this.getLstElm().contains(elm)) {
+
+        return;
+      }
+
+      this.getLstElm().add(elm);
+    }
+    catch (Exception ex) {
+
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
+  public void addElmentoDinamico(Elemento elm) {
+
+    try {
+
+      if (elm == null) {
+
+        return;
+      }
+
+      if (this.getLstElmDinamico().contains(elm)) {
+
+        return;
+      }
+
+      this.getLstElmDinamico().add(elm);
+    }
+    catch (Exception ex) {
+
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
   @Override
   public void dispose() {
 
@@ -103,6 +151,7 @@ public abstract class Mundo extends Objeto implements Disposable {
     }
     finally {
     }
+
     return _hud;
   }
 
@@ -495,6 +544,54 @@ public abstract class Mundo extends Objeto implements Disposable {
     }
   }
 
+  public void removeElemento(Elemento elm) {
+
+    try {
+
+      if (elm == null) {
+
+        return;
+      }
+
+      if (!this.getLstElm().contains(elm)) {
+
+        return;
+      }
+
+      this.getLstElm().remove(elm);
+    }
+    catch (Exception ex) {
+
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
+  public void removeElementoDinamico(Elemento elm) {
+
+    try {
+
+      if (elm == null) {
+
+        return;
+      }
+
+      if (!this.getLstElmDinamico().contains(elm)) {
+
+        return;
+      }
+
+      this.getLstElmDinamico().remove(elm);
+    }
+    catch (Exception ex) {
+
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
   public void render() {
 
     try {
@@ -630,7 +727,6 @@ public abstract class Mundo extends Objeto implements Disposable {
   private void setVctGravidade(Vector2 vctGravidade) {
 
     _vctGravidade = vctGravidade;
-
   }
 
   protected void setVctTelaTamanho(Vector2 vctTelaTamanho) {
@@ -646,9 +742,14 @@ public abstract class Mundo extends Objeto implements Disposable {
       this.updateDiverso();
       this.updateHud();
 
-      for (Elemento elmDinamico : this.getLstElmDinamico()) {
+      for (Elemento elm : this.getLstElmDinamico()) {
 
-        elmDinamico.update();
+        if (elm == null) {
+
+          continue;
+        }
+
+        elm.update();
       }
     }
     catch (Exception ex) {

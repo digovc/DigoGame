@@ -29,6 +29,7 @@ public abstract class AppGame extends App implements ApplicationListener {
       i = appGame;
     }
     catch (Exception ex) {
+
       new Erro("Erro inesperado.\n", ex);
     }
     finally {
@@ -103,6 +104,7 @@ public abstract class AppGame extends App implements ApplicationListener {
       Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     }
     catch (Exception ex) {
+
       new Erro("Erro inesperado.\n", ex);
     }
     finally {

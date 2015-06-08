@@ -245,7 +245,7 @@ public abstract class Elemento extends Objeto implements Disposable {
 
     try {
 
-      this.getObjMundo().getLstElm().remove(this);
+      this.getObjMundo().removeElemento(this);
       this.getObjMundo().getLstElmDinamico().remove(this);
       this.getObjTexture().dispose();
     }
@@ -499,13 +499,11 @@ public abstract class Elemento extends Objeto implements Disposable {
 
       if (_booDinamico) {
 
-        this.getObjMundo().getLstElmDinamico().add(this);
-      }
-      else {
-
-        this.getObjMundo().getLstElmDinamico().remove(this);
+        this.getObjMundo().addElmentoDinamico(this);
+        return;
       }
 
+      this.getObjMundo().removeElementoDinamico(this);
     }
     catch (Exception ex) {
 
@@ -521,10 +519,12 @@ public abstract class Elemento extends Objeto implements Disposable {
 
       _objMundo = objMundo;
 
-      if (_objMundo != null) {
+      if (_objMundo == null) {
 
-        _objMundo.getLstElm().add(this);
+        return;
       }
+
+      _objMundo.addElmento(this);
     }
     catch (Exception ex) {
 
