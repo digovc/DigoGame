@@ -6,12 +6,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.digosofter.digojava.App;
 import com.digosofter.digojava.erro.Erro;
 
 public abstract class MundoBox2d extends Mundo {
 
   public final static float FLT_PIXELS_TO_METERS = 100;
-
   private Box2DDebugRenderer _objBox2dDebugRenderer;
   private Matrix4 _objMatrix4;
   private World _objWorld;
@@ -109,6 +109,11 @@ public abstract class MundoBox2d extends Mundo {
     super.renderDebug();
 
     try {
+
+      if (!App.getI().getBooDebug()) {
+
+        return;
+      }
 
       this.getObjBox2dDebugRenderer().render(this.getObjWorld(), this.getObjMatrix4());
     }

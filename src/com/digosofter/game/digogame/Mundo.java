@@ -544,7 +544,7 @@ public abstract class Mundo extends Objeto implements Disposable {
     }
   }
 
-  public void removeElemento(Elemento elm) {
+  public void removerElemento(Elemento elm) {
 
     try {
 
@@ -568,7 +568,7 @@ public abstract class Mundo extends Objeto implements Disposable {
     }
   }
 
-  public void removeElementoDinamico(Elemento elm) {
+  public void removerElementoDinamico(Elemento elm) {
 
     try {
 

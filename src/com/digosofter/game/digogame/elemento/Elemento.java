@@ -22,6 +22,7 @@ public abstract class Elemento extends Objeto implements Disposable {
   private boolean _booAplicarGravidadeY = true;
   private boolean _booDinamico;
   private boolean _booNoChao;
+  private boolean _booVisivel;
   private List<Movimento> _lstMov;
   private List<Colisao> _lstObjColisao;
   private Mundo _objMundo;
@@ -245,8 +246,8 @@ public abstract class Elemento extends Objeto implements Disposable {
 
     try {
 
-      this.getObjMundo().removeElemento(this);
-      this.getObjMundo().getLstElmDinamico().remove(this);
+      this.getObjMundo().removerElemento(this);
+      this.getObjMundo().removerElementoDinamico(this);
       this.getObjTexture().dispose();
     }
     catch (Exception ex) {
@@ -273,6 +274,11 @@ public abstract class Elemento extends Objeto implements Disposable {
     try {
 
       for (Colisao objColisao : this.getLstObjColisao()) {
+
+        if (objColisao == null) {
+
+          continue;
+        }
 
         if (objColisao.getEnmTipo().equals(enmTipo)) {
 
@@ -329,6 +335,22 @@ public abstract class Elemento extends Objeto implements Disposable {
     }
 
     return _booNoChao;
+  }
+
+  public boolean getBooVisivel() {
+
+    try {
+
+      _booVisivel = this.validarVisivel();
+    }
+    catch (Exception ex) {
+
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+
+    return _booVisivel;
   }
 
   protected abstract String getDirTexture();
@@ -503,7 +525,7 @@ public abstract class Elemento extends Objeto implements Disposable {
         return;
       }
 
-      this.getObjMundo().removeElementoDinamico(this);
+      this.getObjMundo().removerElementoDinamico(this);
     }
     catch (Exception ex) {
 
@@ -534,7 +556,7 @@ public abstract class Elemento extends Objeto implements Disposable {
     }
   }
 
-  private void setVctPosicao(Vector2 vctPosicao) {
+  protected void setVctPosicao(Vector2 vctPosicao) {
 
     _vctPosicao = vctPosicao;
   }
@@ -683,6 +705,40 @@ public abstract class Elemento extends Objeto implements Disposable {
     }
     finally {
     }
+  }
+
+  private boolean validarVisivel() {
+
+    try {
+
+      if ((this.getVctPosicao().x + this.getVctTamanho().x) < 0) {
+
+        return false;
+      }
+
+      if (this.getVctPosicao().x > this.getObjMundo().getVctTelaTamanho().x) {
+
+        return false;
+      }
+
+      if (this.getVctPosicao().y > this.getObjMundo().getVctTelaTamanho().y) {
+
+        return false;
+      }
+
+      if ((this.getVctPosicao().y + this.getVctTamanho().y) < 0) {
+
+        return false;
+      }
+    }
+    catch (Exception ex) {
+
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+
+    return true;
   }
 
   private void verificarColisao(Elemento elm) {
