@@ -20,33 +20,62 @@ public class Colisao extends Objeto {
   private EnmTipo _enmTipo = EnmTipo.NONE;
   private Rectangle _rctIntercessao;
 
-  private EnmTipo calcularEnmTipo() {
+  public float ajustarY(float y) {
 
     try {
 
-      if (this.getRctIntercessao().height > this.getRctIntercessao().width && this.getRctIntercessao().x > this.getElm1().getVctPosicao().x) {
-        return EnmTipo.LATERAL_DIREITA;
+      if (EnmTipo.TOPO.equals(this.getEnmTipo())) {
+
+        return Math.round(this.getRctIntercessao().height - this.getRctIntercessao().y);
       }
 
-      if (this.getRctIntercessao().height > this.getRctIntercessao().width && this.getRctIntercessao().x <= this.getElm1().getVctPosicao().x) {
-        return EnmTipo.LATERAL_ESQUERDA;
-      }
+      if (EnmTipo.FUNDO.equals(this.getEnmTipo())) {
 
-      if (this.getRctIntercessao().height < this.getRctIntercessao().width && this.getRctIntercessao().y > this.getElm1().getVctPosicao().y) {
-        return EnmTipo.TOPO;
-      }
-
-      if (this.getRctIntercessao().height < this.getRctIntercessao().width && this.getRctIntercessao().y <= this.getElm1().getVctPosicao().y) {
-        return EnmTipo.FUNDO;
+        return Math.round(this.getRctIntercessao().height + this.getRctIntercessao().y);
       }
     }
     catch (Exception ex) {
+
       new Erro("Erro inesperado.\n", ex);
     }
     finally {
     }
 
-    return null;
+    return y;
+  }
+
+  private EnmTipo calcularEnmTipo() {
+
+    try {
+
+      if (this.getRctIntercessao().height > this.getRctIntercessao().width && this.getRctIntercessao().x > this.getElm1().getVctPosicao().x) {
+
+        return EnmTipo.LATERAL_DIREITA;
+      }
+
+      if (this.getRctIntercessao().height > this.getRctIntercessao().width && this.getRctIntercessao().x <= this.getElm1().getVctPosicao().x) {
+
+        return EnmTipo.LATERAL_ESQUERDA;
+      }
+
+      if (this.getRctIntercessao().height < this.getRctIntercessao().width && this.getRctIntercessao().y > this.getElm1().getVctPosicao().y) {
+
+        return EnmTipo.TOPO;
+      }
+
+      if (this.getRctIntercessao().height < this.getRctIntercessao().width && this.getRctIntercessao().y <= this.getElm1().getVctPosicao().y) {
+
+        return EnmTipo.FUNDO;
+      }
+    }
+    catch (Exception ex) {
+
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+
+    return EnmTipo.NONE;
   }
 
   private Elemento getElm1() {
@@ -71,6 +100,7 @@ public class Colisao extends Objeto {
       _enmTipo = this.calcularEnmTipo();
     }
     catch (Exception ex) {
+
       new Erro("Erro inesperado.\n", ex);
     }
     finally {
@@ -78,7 +108,7 @@ public class Colisao extends Objeto {
     return _enmTipo;
   }
 
-  private Rectangle getRctIntercessao() {
+  public Rectangle getRctIntercessao() {
 
     return _rctIntercessao;
   }

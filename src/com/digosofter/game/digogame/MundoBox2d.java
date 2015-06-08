@@ -32,22 +32,7 @@ public abstract class MundoBox2d extends Mundo {
       this.getObjWorld().dispose();
     }
     catch (Exception ex) {
-      new Erro("Erro inesperado.\n", ex);
-    }
-    finally {
-    }
-  }
 
-  @Override
-  public void inicializar() {
-
-    super.inicializar();
-
-    try {
-
-      Box2D.init();
-    }
-    catch (Exception ex) {
       new Erro("Erro inesperado.\n", ex);
     }
     finally {
@@ -66,6 +51,7 @@ public abstract class MundoBox2d extends Mundo {
       _objBox2dDebugRenderer = new Box2DDebugRenderer();
     }
     catch (Exception ex) {
+
       new Erro("Erro inesperado.\n", ex);
     }
     finally {
@@ -89,15 +75,32 @@ public abstract class MundoBox2d extends Mundo {
       }
 
       _objWorld = new World(this.getVctGravidade(), true);
-
     }
     catch (Exception ex) {
+
       new Erro("Erro inesperado.\n", ex);
     }
     finally {
     }
 
     return _objWorld;
+  }
+
+  @Override
+  public void inicializar() {
+
+    super.inicializar();
+
+    try {
+
+      Box2D.init();
+    }
+    catch (Exception ex) {
+
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
   }
 
   @Override
@@ -110,6 +113,7 @@ public abstract class MundoBox2d extends Mundo {
       this.getObjBox2dDebugRenderer().render(this.getObjWorld(), this.getObjMatrix4());
     }
     catch (Exception ex) {
+
       new Erro("Erro inesperado.\n", ex);
     }
     finally {
@@ -132,10 +136,10 @@ public abstract class MundoBox2d extends Mundo {
       this.getObjWorld().step(Gdx.graphics.getDeltaTime(), 6, 2);
     }
     catch (Exception ex) {
+
       new Erro("Erro inesperado.\n", ex);
     }
     finally {
     }
   }
-
 }

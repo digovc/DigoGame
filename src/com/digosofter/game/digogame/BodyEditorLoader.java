@@ -23,35 +23,70 @@ import com.badlogic.gdx.utils.JsonValue;
  */
 public class BodyEditorLoader {
 
-  // Model
-  private final Model model;
+  public static class CircleModel {
 
-  // Reusable stuff
-  private final List<Vector2> vectorPool = new ArrayList<Vector2>();
-  private final PolygonShape polygonShape = new PolygonShape();
+    public final Vector2 center = new Vector2();
+    public float radius;
+  }
+
+  public static class Model {
+
+    public final Map<String, RigidBodyModel> rigidBodies = new HashMap<String, RigidBodyModel>();
+  }
+
+  public static class PolygonModel {
+
+    private Vector2[] buffer; // used to avoid allocation in attachFixture()
+    public final List<Vector2> vertices = new ArrayList<Vector2>();
+  }
+
+  public static class RigidBodyModel {
+
+    public final List<CircleModel> circles = new ArrayList<CircleModel>();
+    public String imagePath;
+    public String name;
+    public final Vector2 origin = new Vector2();
+    public final List<PolygonModel> polygons = new ArrayList<PolygonModel>();
+  }
+
   private final CircleShape circleShape = new CircleShape();
-  private final Vector2 vec = new Vector2();
 
   // -------------------------------------------------------------------------
   // Ctors
   // -------------------------------------------------------------------------
 
+  // Model
+  private final Model model;
+
+  private final PolygonShape polygonShape = new PolygonShape();
+
+  // -------------------------------------------------------------------------
+  // Public API
+  // -------------------------------------------------------------------------
+
+  private final Vector2 vec = new Vector2();
+
+  // Reusable stuff
+  private final List<Vector2> vectorPool = new ArrayList<Vector2>();
+
   public BodyEditorLoader(FileHandle file) {
 
-    if (file == null)
+    if (file == null) {
       throw new NullPointerException("file is null");
+    }
     model = readJson(file.readString());
   }
 
   public BodyEditorLoader(String str) {
 
-    if (str == null)
+    if (str == null) {
       throw new NullPointerException("str is null");
+    }
     model = readJson(str);
   }
 
   // -------------------------------------------------------------------------
-  // Public API
+  // Json Models
   // -------------------------------------------------------------------------
 
   /**
@@ -85,8 +120,9 @@ public class BodyEditorLoader {
   public void attachFixture(Body body, String name, FixtureDef fd, float scale) {
 
     RigidBodyModel rbModel = model.rigidBodies.get(name);
-    if (rbModel == null)
+    if (rbModel == null) {
       throw new RuntimeException("Name '" + name + "' was not found.");
+    }
 
     Vector2 origin = vec.set(rbModel.origin).scl(scale);
 
@@ -103,8 +139,8 @@ public class BodyEditorLoader {
       fd.shape = polygonShape;
       body.createFixture(fd);
 
-      for (int ii = 0, nn = vertices.length; ii < nn; ii++) {
-        free(vertices[ii]);
+      for (Vector2 vertice : vertices) {
+        free(vertice);
       }
     }
 
@@ -122,31 +158,22 @@ public class BodyEditorLoader {
     }
   }
 
+  private void free(Vector2 v) {
+
+    vectorPool.add(v);
+  }
+
   /**
    * Gets the image path attached to the given name.
    */
   public String getImagePath(String name) {
 
     RigidBodyModel rbModel = model.rigidBodies.get(name);
-    if (rbModel == null)
+    if (rbModel == null) {
       throw new RuntimeException("Name '" + name + "' was not found.");
+    }
 
     return rbModel.imagePath;
-  }
-
-  /**
-   * Gets the origin point attached to the given name. Since the point is
-   * normalized in [0,1] coordinates, it needs to be scaled to your body size.
-   * Warning: this method returns the same Vector2 object each time, so copy it
-   * if you need it for later use.
-   */
-  public Vector2 getOrigin(String name, float scale) {
-
-    RigidBodyModel rbModel = model.rigidBodies.get(name);
-    if (rbModel == null)
-      throw new RuntimeException("Name '" + name + "' was not found.");
-
-    return vec.set(rbModel.origin).scl(scale);
   }
 
   /**
@@ -160,37 +187,32 @@ public class BodyEditorLoader {
   }
 
   // -------------------------------------------------------------------------
-  // Json Models
-  // -------------------------------------------------------------------------
-
-  public static class Model {
-
-    public final Map<String, RigidBodyModel> rigidBodies = new HashMap<String, RigidBodyModel>();
-  }
-
-  public static class RigidBodyModel {
-
-    public String name;
-    public String imagePath;
-    public final Vector2 origin = new Vector2();
-    public final List<PolygonModel> polygons = new ArrayList<PolygonModel>();
-    public final List<CircleModel> circles = new ArrayList<CircleModel>();
-  }
-
-  public static class PolygonModel {
-
-    public final List<Vector2> vertices = new ArrayList<Vector2>();
-    private Vector2[] buffer; // used to avoid allocation in attachFixture()
-  }
-
-  public static class CircleModel {
-
-    public final Vector2 center = new Vector2();
-    public float radius;
-  }
-
-  // -------------------------------------------------------------------------
   // Json reading process
+  // -------------------------------------------------------------------------
+
+  /**
+   * Gets the origin point attached to the given name. Since the point is
+   * normalized in [0,1] coordinates, it needs to be scaled to your body size.
+   * Warning: this method returns the same Vector2 object each time, so copy it
+   * if you need it for later use.
+   */
+  public Vector2 getOrigin(String name, float scale) {
+
+    RigidBodyModel rbModel = model.rigidBodies.get(name);
+    if (rbModel == null) {
+      throw new RuntimeException("Name '" + name + "' was not found.");
+    }
+
+    return vec.set(rbModel.origin).scl(scale);
+  }
+
+  private Vector2 newVec() {
+
+    return vectorPool.isEmpty() ? new Vector2() : vectorPool.remove(0);
+  }
+
+  // -------------------------------------------------------------------------
+  // Helpers
   // -------------------------------------------------------------------------
 
   private Model readJson(String str) {
@@ -249,19 +271,5 @@ public class BodyEditorLoader {
     }
 
     return rbModel;
-  }
-
-  // -------------------------------------------------------------------------
-  // Helpers
-  // -------------------------------------------------------------------------
-
-  private Vector2 newVec() {
-
-    return vectorPool.isEmpty() ? new Vector2() : vectorPool.remove(0);
-  }
-
-  private void free(Vector2 v) {
-
-    vectorPool.add(v);
   }
 }

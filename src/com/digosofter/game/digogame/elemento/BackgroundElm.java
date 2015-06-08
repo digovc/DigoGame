@@ -38,6 +38,7 @@ public abstract class BackgroundElm extends Elemento {
   private Image getImg() {
 
     try {
+
       if (_img != null) {
 
         return _img;
@@ -49,6 +50,7 @@ public abstract class BackgroundElm extends Elemento {
       _img.setWidth(Gdx.graphics.getWidth());
     }
     catch (Exception ex) {
+
       new Erro("Erro inesperado.\n", ex);
     }
     finally {
@@ -61,11 +63,19 @@ public abstract class BackgroundElm extends Elemento {
   public void inicializar() {
 
     super.inicializar();
+  }
+
+  @Override
+  public void render(SpriteBatch objSpriteBatch) {
+
+    super.render(objSpriteBatch);
 
     try {
 
+      this.getImg().draw(objSpriteBatch, 1);
     }
     catch (Exception ex) {
+
       new Erro("Erro inesperado.\n", ex);
     }
     finally {
@@ -102,26 +112,10 @@ public abstract class BackgroundElm extends Elemento {
 
     }
     catch (Exception ex) {
+
       new Erro("Erro inesperado.\n", ex);
     }
     finally {
     }
   }
-
-  @Override
-  public void render(SpriteBatch objSpriteBatch) {
-
-    super.render(objSpriteBatch);
-
-    try {
-
-      this.getImg().draw(objSpriteBatch, 1);
-    }
-    catch (Exception ex) {
-      new Erro("Erro inesperado.\n", ex);
-    }
-    finally {
-    }
-  }
-
 }

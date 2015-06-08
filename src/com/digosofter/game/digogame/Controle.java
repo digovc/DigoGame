@@ -19,9 +19,9 @@ public class Controle extends Objeto implements InputProcessor {
       }
 
       i = new Controle();
-
     }
     catch (Exception ex) {
+
       new Erro("Erro inesperado.\n", ex);
     }
     finally {
@@ -37,6 +37,7 @@ public class Controle extends Objeto implements InputProcessor {
       this.setI(this);
     }
     catch (Exception ex) {
+
       new Erro("Erro inesperado.\n", ex);
     }
     finally {
@@ -61,10 +62,12 @@ public class Controle extends Objeto implements InputProcessor {
     try {
 
       if (intKeyCode == Keys.ESCAPE) {
+
         AppGame.getI().setBooDebug(!AppGame.getI().getBooDebug());
       }
     }
     catch (Exception ex) {
+
       new Erro("Erro inesperado.\n", ex);
     }
     finally {
@@ -120,5 +123,4 @@ public class Controle extends Objeto implements InputProcessor {
 
     return false;
   }
-
 }

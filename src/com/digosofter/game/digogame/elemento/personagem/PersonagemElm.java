@@ -10,5 +10,4 @@ public abstract class PersonagemElm extends Elemento {
 
     super(objMundo, vctPosicao);
   }
-
 }
