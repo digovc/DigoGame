@@ -72,6 +72,22 @@ public abstract class BackgroundElm extends Elemento {
     }
   }
 
+  @Override
+  public void render(SpriteBatch objSpriteBatch) {
+
+    super.render(objSpriteBatch);
+
+    try {
+
+      this.getImg().draw(objSpriteBatch, 1);
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
   public void setBooRepeteX(boolean booRepeteX) {
 
     _booRepeteX = booRepeteX;
@@ -100,22 +116,6 @@ public abstract class BackgroundElm extends Elemento {
 
       _dirImagem = "assets/" + _dirImagem;
 
-    }
-    catch (Exception ex) {
-      new Erro("Erro inesperado.\n", ex);
-    }
-    finally {
-    }
-  }
-
-  @Override
-  public void render(SpriteBatch objSpriteBatch) {
-
-    super.render(objSpriteBatch);
-
-    try {
-
-      this.getImg().draw(objSpriteBatch, 1);
     }
     catch (Exception ex) {
       new Erro("Erro inesperado.\n", ex);

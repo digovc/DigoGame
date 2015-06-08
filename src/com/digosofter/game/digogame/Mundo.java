@@ -20,14 +20,17 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.digosofter.digojava.App;
 import com.digosofter.digojava.Objeto;
+import com.digosofter.digojava.Utils;
 import com.digosofter.digojava.erro.Erro;
 import com.digosofter.game.digogame.elemento.Elemento;
+import com.digosofter.game.digogame.hud.Hud;
 
 public abstract class Mundo extends Objeto implements Disposable {
 
   public final static int INT_TAMANHO_BASICO = 32;
 
   private boolean _booAplicarFisica;
+  private Hud _hud;
   private List<Elemento> _lstElm;
   private List<Elemento> _lstElmDinamico;
   private OrthographicCamera _objCamera;
@@ -39,6 +42,7 @@ public abstract class Mundo extends Objeto implements Disposable {
   private TiledMapTileLayer _objTiledMapTileLayerFixa;
   private Viewport _objViewport;
   private Vector2 _vctGravidade;
+  private Vector2 _vctTelaTamanho;
 
   public Mundo(Vector2 vctGravidade) {
 
@@ -79,6 +83,25 @@ public abstract class Mundo extends Objeto implements Disposable {
   }
 
   protected abstract String getDirTmxMap();
+
+  private Hud getHud() {
+
+    try {
+
+      if (_hud != null) {
+
+        return _hud;
+      }
+
+      _hud = new Hud(this);
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+    return _hud;
+  }
 
   public List<Elemento> getLstElm() {
 
@@ -161,7 +184,7 @@ public abstract class Mundo extends Objeto implements Disposable {
     return _objShapeRenderDebug;
   }
 
-  protected SpriteBatch getObjSpriteBatch() {
+  public SpriteBatch getObjSpriteBatch() {
 
     try {
 
@@ -263,7 +286,7 @@ public abstract class Mundo extends Objeto implements Disposable {
     return _objTiledMapTileLayerFixa;
   }
 
-  private Viewport getObjViewport() {
+  public Viewport getObjViewport() {
 
     try {
 
@@ -272,7 +295,7 @@ public abstract class Mundo extends Objeto implements Disposable {
         return _objViewport;
       }
 
-      _objViewport = new StretchViewport(16 * Mundo.INT_TAMANHO_BASICO, 10 * Mundo.INT_TAMANHO_BASICO, this.getObjCamera());
+      _objViewport = new StretchViewport(this.getVctTelaTamanho().x, this.getVctTelaTamanho().y, this.getObjCamera());
     }
     catch (Exception ex) {
       new Erro("Erro inesperado.\n", ex);
@@ -283,7 +306,7 @@ public abstract class Mundo extends Objeto implements Disposable {
     return _objViewport;
   }
 
-  protected Vector2 getVctGravidade() {
+  public Vector2 getVctGravidade() {
 
     try {
 
@@ -303,11 +326,33 @@ public abstract class Mundo extends Objeto implements Disposable {
     return _vctGravidade;
   }
 
+  public Vector2 getVctTelaTamanho() {
+
+    try {
+
+      if (_vctTelaTamanho != null) {
+
+        return _vctTelaTamanho;
+      }
+
+      _vctTelaTamanho = new Vector2(16 * Mundo.INT_TAMANHO_BASICO, 10 * Mundo.INT_TAMANHO_BASICO);
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+    return _vctTelaTamanho;
+  }
+
   public void inicializar() {
 
     try {
 
       this.inicializarMap();
+
+      // TODO: Terminar hub para sistema Android.
+      // this.inicializarHud();
     }
     catch (Exception ex) {
       new Erro("Erro inesperado.\n", ex);
@@ -320,6 +365,19 @@ public abstract class Mundo extends Objeto implements Disposable {
 
   protected abstract void inicializarCellFixa(Cell objCell, int x, int y);
 
+  private void inicializarHud() {
+
+    try {
+
+      this.getHud().inicializar();
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
   private void inicializarMap() {
 
     try {
@@ -327,6 +385,11 @@ public abstract class Mundo extends Objeto implements Disposable {
       // TODO: Inicializar os componentes a medida que forem sendo necessários.
       // Do jeito que está ele inicializa todos os blocos do mapa, fazendo uso
       // de muita memória.
+      if (Utils.getBooStrVazia(this.getDirTmxMap())) {
+
+        return;
+      }
+
       this.inicializarMapCmdAmbiente();
       this.inicializarMapCmdFixa();
       this.inicializarMapCmdDinamica();
@@ -423,6 +486,26 @@ public abstract class Mundo extends Objeto implements Disposable {
       this.renderMap();
       this.renderElementos();
       this.renderDebug();
+      this.renderHud();
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
+  protected void renderDebug() {
+
+    try {
+
+      if (!App.getI().getBooDebug()) {
+
+        return;
+      }
+
+      this.montarLayoutDebugFps();
+      this.renderElementosDebug();
     }
     catch (Exception ex) {
       new Erro("Erro inesperado.\n", ex);
@@ -471,17 +554,11 @@ public abstract class Mundo extends Objeto implements Disposable {
     }
   }
 
-  protected void renderDebug() {
+  private void renderHud() {
 
     try {
 
-      if (!App.getI().getBooDebug()) {
-
-        return;
-      }
-
-      this.montarLayoutDebugFps();
-      this.renderElementosDebug();
+      this.getHud().render();
     }
     catch (Exception ex) {
       new Erro("Erro inesperado.\n", ex);
@@ -493,6 +570,11 @@ public abstract class Mundo extends Objeto implements Disposable {
   private void renderMap() {
 
     try {
+
+      if (Utils.getBooStrVazia(this.getDirTmxMap())) {
+
+        return;
+      }
 
       this.getObjTiledMapRenderer().setView(this.getObjCamera());
       this.getObjTiledMapRenderer().render();
@@ -529,12 +611,18 @@ public abstract class Mundo extends Objeto implements Disposable {
 
   }
 
+  protected void setVctTelaTamanho(Vector2 vctTelaTamanho) {
+
+    _vctTelaTamanho = vctTelaTamanho;
+  }
+
   public void update() {
 
     try {
 
       this.updateCamera();
       this.updateDiverso();
+      this.updateHud();
 
       for (Elemento elmDinamico : this.getLstElmDinamico()) {
 
@@ -571,6 +659,19 @@ public abstract class Mundo extends Objeto implements Disposable {
     try {
 
       this.getObjSpriteBatch().setProjectionMatrix(this.getObjCamera().combined);
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
+  private void updateHud() {
+
+    try {
+
+      this.getHud().update();
     }
     catch (Exception ex) {
       new Erro("Erro inesperado.\n", ex);

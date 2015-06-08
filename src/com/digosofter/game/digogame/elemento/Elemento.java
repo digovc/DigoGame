@@ -3,6 +3,7 @@ package com.digosofter.game.digogame.elemento;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -13,10 +14,15 @@ import com.badlogic.gdx.utils.Disposable;
 import com.digosofter.digojava.Objeto;
 import com.digosofter.digojava.erro.Erro;
 import com.digosofter.game.digogame.Mundo;
+import com.digosofter.game.digogame.elemento.Colisao.EnmTipo;
 
 public abstract class Elemento extends Objeto implements Disposable {
 
+  private boolean _booAplicarGravidadeX = true;
+  private boolean _booAplicarGravidadeY = true;
   private boolean _booDinamico;
+  private boolean _booNoChao;
+  private List<Movimento> _lstMov;
   private List<Colisao> _lstObjColisao;
   private Mundo _objMundo;
   private Texture _objTexture;
@@ -38,57 +44,192 @@ public abstract class Elemento extends Objeto implements Disposable {
     }
   }
 
-  private Vector2 calcularPosicao() {
-
-    Vector2 vctResultado = null;
+  private void aplicarGravidadeX() {
 
     try {
 
-      vctResultado = new Vector2();
-      vctResultado.x = this.calcularPosicaoX();
-      vctResultado.y = this.calcularPosicaoY();
+      if (!this.getBooAplicarGravidadeX()) {
+
+        this.setBooAplicarGravidadeX(true);
+        return;
+      }
+
+      if (this.getObjMundo().getVctGravidade().x > 0 && this.getBooColidiuLateralDireita()) {
+
+        return;
+      }
+
+      if (this.getObjMundo().getVctGravidade().x < 0 && this.getBooColidiuLateralEsquerda()) {
+
+        return;
+      }
+
+      this.getVctPosicao().x = this.getVctPosicao().x + this.getObjMundo().getVctGravidade().x * Gdx.graphics.getDeltaTime();
     }
     catch (Exception ex) {
       new Erro("Erro inesperado.\n", ex);
     }
     finally {
     }
-
-    return vctResultado;
   }
 
-  private float calcularPosicaoX() {
-
-    float fltResultado = 0;
+  private void aplicarGravidadeY() {
 
     try {
 
-      fltResultado = this.getVctPosicao().x;
+      if (!this.getBooAplicarGravidadeY()) {
+
+        this.setBooAplicarGravidadeY(true);
+        return;
+      }
+
+      if (this.getObjMundo().getVctGravidade().y > 0 && this.getBooColidiuLateralTopo()) {
+
+        return;
+      }
+
+      if (this.getObjMundo().getVctGravidade().y < 0 && this.getBooColidiuLateralFundo()) {
+
+        return;
+      }
+
+      this.getVctPosicao().y = this.getVctPosicao().y + this.getObjMundo().getVctGravidade().y * Gdx.graphics.getDeltaTime();
     }
     catch (Exception ex) {
       new Erro("Erro inesperado.\n", ex);
     }
     finally {
     }
-
-    return fltResultado;
   }
 
-  private float calcularPosicaoY() {
-
-    float fltResultado = 0;
+  protected void aplicarMovimento(Movimento mov) {
 
     try {
 
-      fltResultado = this.getVctPosicao().y;
+      this.getLstMov().add(mov);
     }
     catch (Exception ex) {
       new Erro("Erro inesperado.\n", ex);
     }
     finally {
     }
+  }
 
-    return fltResultado;
+  private void aplicarMovimentoX() {
+
+    List<Movimento> lstMovTemp;
+
+    try {
+
+      lstMovTemp = new ArrayList<Movimento>();
+
+      for (Movimento mov : this.getLstMov()) {
+
+        lstMovTemp.add(mov);
+      }
+
+      for (Movimento mov : lstMovTemp) {
+
+        this.aplicarMovimentoX(mov);
+      }
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
+  private void aplicarMovimentoX(Movimento mov) {
+
+    try {
+
+      if (mov.getVctDistancia().x == 0) {
+
+        return;
+      }
+
+      if (mov.getVctDistancia().x > 0 && this.getBooColidiuLateralDireita()) {
+
+        this.getLstMov().remove(mov);
+        return;
+      }
+
+      if (mov.getVctDistancia().x < 0 && this.getBooColidiuLateralEsquerda()) {
+
+        this.getLstMov().remove(mov);
+        return;
+      }
+
+      this.setBooAplicarGravidadeX(false);
+      this.getVctPosicao().x = mov.calcularX(this.getVctPosicao().x);
+
+      if (mov.getBooAcabou()) {
+
+        this.getLstMov().remove(mov);
+      }
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
+  private void aplicarMovimentoY() {
+
+    List<Movimento> lstMovTemp;
+
+    try {
+
+      lstMovTemp = new ArrayList<Movimento>();
+
+      for (Movimento mov : this.getLstMov()) {
+
+        lstMovTemp.add(mov);
+      }
+
+      for (Movimento mov : lstMovTemp) {
+
+        this.aplicarMovimentoY(mov);
+      }
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
+  private void aplicarMovimentoY(Movimento mov) {
+
+    try {
+
+      if (mov.getVctDistancia().y > 0 && this.getBooColidiuLateralTopo()) {
+
+        this.getLstMov().remove(mov);
+        return;
+      }
+
+      if (mov.getVctDistancia().y < 0 && this.getBooColidiuLateralFundo()) {
+
+        this.getLstMov().remove(mov);
+        return;
+      }
+
+      this.setBooAplicarGravidadeY(false);
+      this.getVctPosicao().y = mov.calcularY(this.getVctPosicao().y);
+
+      if (mov.getBooAcabou()) {
+
+        this.getLstMov().remove(mov);
+      }
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
   }
 
   @Override
@@ -96,6 +237,9 @@ public abstract class Elemento extends Objeto implements Disposable {
 
     try {
 
+      this.getObjMundo().getLstElm().remove(this);
+      this.getObjMundo().getLstElmDinamico().remove(this);
+      this.getObjTexture().dispose();
     }
     catch (Exception ex) {
       new Erro("Erro inesperado.\n", ex);
@@ -105,12 +249,98 @@ public abstract class Elemento extends Objeto implements Disposable {
 
   }
 
+  private boolean getBooAplicarGravidadeX() {
+
+    return _booAplicarGravidadeX;
+  }
+
+  private boolean getBooAplicarGravidadeY() {
+
+    return _booAplicarGravidadeY;
+  }
+
+  private boolean getBooColidiu(Colisao.EnmTipo enmTipo) {
+
+    try {
+
+      for (Colisao objColisao : this.getLstObjColisao()) {
+
+        if (objColisao.getEnmTipo().equals(enmTipo)) {
+
+          return true;
+        }
+      }
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+
+    return false;
+  }
+
+  private boolean getBooColidiuLateralDireita() {
+
+    return this.getBooColidiu(EnmTipo.LATERAL_DIREITA);
+  }
+
+  private boolean getBooColidiuLateralEsquerda() {
+
+    return this.getBooColidiu(EnmTipo.LATERAL_ESQUERDA);
+  }
+
+  private boolean getBooColidiuLateralFundo() {
+
+    return this.getBooColidiu(EnmTipo.FUNDO);
+  }
+
+  private boolean getBooColidiuLateralTopo() {
+
+    return this.getBooColidiu(EnmTipo.TOPO);
+  }
+
   public boolean getBooDinamico() {
 
     return _booDinamico;
   }
 
+  protected boolean getBooNoChao() {
+
+    try {
+
+      _booNoChao = this.getBooColidiu(EnmTipo.FUNDO);
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+
+    return _booNoChao;
+  }
+
   protected abstract String getDirTexture();
+
+  private List<Movimento> getLstMov() {
+
+    try {
+
+      if (_lstMov != null) {
+
+        return _lstMov;
+      }
+
+      _lstMov = new ArrayList<Movimento>();
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+
+    return _lstMov;
+  }
 
   private List<Colisao> getLstObjColisao() {
 
@@ -251,6 +481,16 @@ public abstract class Elemento extends Objeto implements Disposable {
 
   }
 
+  private void setBooAplicarGravidadeX(boolean booAplicarGravidadeX) {
+
+    _booAplicarGravidadeX = booAplicarGravidadeX;
+  }
+
+  private void setBooAplicarGravidadeY(boolean booAplicarGravidadeY) {
+
+    _booAplicarGravidadeY = booAplicarGravidadeY;
+  }
+
   protected void setBooDinamico(boolean booDinamico) {
 
     try {
@@ -302,6 +542,20 @@ public abstract class Elemento extends Objeto implements Disposable {
     _vctTamanho = vctTamanho;
   }
 
+  protected void updadePosicao() {
+
+    try {
+
+      this.updatePosicaoX();
+      this.updatePosicaoY();
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
   public void update() {
 
     try {
@@ -320,21 +574,7 @@ public abstract class Elemento extends Objeto implements Disposable {
     }
   }
 
-  private void updateFisica() {
-
-    try {
-
-      this.verificarColisao();
-      this.setVctPosicao(this.calcularPosicao());
-    }
-    catch (Exception ex) {
-      new Erro("Erro inesperado.\n", ex);
-    }
-    finally {
-    }
-  }
-
-  private void verificarColisao() {
+  private void updateColisao() {
 
     try {
 
@@ -349,6 +589,79 @@ public abstract class Elemento extends Objeto implements Disposable {
 
         this.verificarColisao(elm);
       }
+
+      this.updateColisaoAjustarPosicao();
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
+  private void updateColisaoAjustarPosicao() {
+
+    try {
+
+      for (Colisao objColisao : this.getLstObjColisao()) {
+
+        this.updateColisaoAjustarPosicao(objColisao);
+      }
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
+  private void updateColisaoAjustarPosicao(Colisao objColisao) {
+
+    try {
+
+      this.getVctPosicao().y = objColisao.ajustarY(this.getVctPosicao().y);
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
+  private void updateFisica() {
+
+    try {
+
+      this.updadePosicao();
+      this.updateColisao();
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
+  private void updatePosicaoX() {
+
+    try {
+
+      this.aplicarMovimentoX();
+      this.aplicarGravidadeX();
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
+  private void updatePosicaoY() {
+
+    try {
+
+      this.aplicarMovimentoY();
+      this.aplicarGravidadeY();
     }
     catch (Exception ex) {
       new Erro("Erro inesperado.\n", ex);
@@ -376,8 +689,6 @@ public abstract class Elemento extends Objeto implements Disposable {
       objColisao.setElm1(this);
       objColisao.setElm2(elm);
       objColisao.setRctIntercessao(rctIntercessao);
-
-      objColisao.getEnmTipo();
 
       this.getLstObjColisao().add(objColisao);
     }

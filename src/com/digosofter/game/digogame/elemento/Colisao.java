@@ -20,6 +20,30 @@ public class Colisao extends Objeto {
   private EnmTipo _enmTipo = EnmTipo.NONE;
   private Rectangle _rctIntercessao;
 
+  public float ajustarY(float y) {
+
+    try {
+
+      if (EnmTipo.TOPO.equals(this.getEnmTipo())) {
+
+        return Math.round(this.getRctIntercessao().height - this.getRctIntercessao().y);
+      }
+
+      if (EnmTipo.FUNDO.equals(this.getEnmTipo())) {
+
+        return Math.round(this.getRctIntercessao().height + this.getRctIntercessao().y);
+      }
+
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+
+    return y;
+  }
+
   private EnmTipo calcularEnmTipo() {
 
     try {
@@ -46,7 +70,7 @@ public class Colisao extends Objeto {
     finally {
     }
 
-    return null;
+    return EnmTipo.NONE;
   }
 
   private Elemento getElm1() {
@@ -78,7 +102,7 @@ public class Colisao extends Objeto {
     return _enmTipo;
   }
 
-  private Rectangle getRctIntercessao() {
+  public Rectangle getRctIntercessao() {
 
     return _rctIntercessao;
   }

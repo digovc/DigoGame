@@ -50,6 +50,25 @@ public abstract class AppGame extends App implements ApplicationListener {
     }
   }
 
+  @Override
+  public void create() {
+
+    try {
+
+      Gdx.input.setInputProcessor(this.getObjControle());
+    }
+    catch (Exception ex) {
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
+  @Override
+  public void dispose() {
+
+  }
+
   Color getCorBkg() {
 
     try {
@@ -68,25 +87,6 @@ public abstract class AppGame extends App implements ApplicationListener {
     }
 
     return _corBkg;
-  }
-
-  @Override
-  public void dispose() {
-
-  }
-
-  @Override
-  public void create() {
-
-    try {
-
-      Gdx.input.setInputProcessor(this.getObjControle());
-    }
-    catch (Exception ex) {
-      new Erro("Erro inesperado.\n", ex);
-    }
-    finally {
-    }
   }
 
   protected abstract InputProcessor getObjControle();
