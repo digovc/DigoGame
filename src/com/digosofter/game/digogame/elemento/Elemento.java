@@ -353,7 +353,10 @@ public abstract class Elemento extends Objeto implements Disposable {
     return _booVisivel;
   }
 
-  protected abstract String getDirTexture();
+  protected String getDirTexture() {
+
+    return null;
+  }
 
   private List<Movimento> getLstMov() {
 

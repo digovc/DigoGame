@@ -57,7 +57,8 @@ public abstract class AppGame extends App implements ApplicationListener {
 
     try {
 
-      Gdx.input.setInputProcessor(this.getObjControle());
+      this.inicializar();
+      this.inicializarLocal();
     }
     catch (Exception ex) {
 
@@ -67,12 +68,7 @@ public abstract class AppGame extends App implements ApplicationListener {
     }
   }
 
-  @Override
-  public void dispose() {
-
-  }
-
-  Color getCorBkg() {
+  public Color getCorBkg() {
 
     try {
 
@@ -93,7 +89,45 @@ public abstract class AppGame extends App implements ApplicationListener {
     return _corBkg;
   }
 
-  protected abstract InputProcessor getObjControle();
+  protected InputProcessor getObjControle() {
+
+    return null;
+  }
+
+  protected abstract void inicializar();
+
+  private void inicializarControle() {
+
+    try {
+
+      if (this.getObjControle() == null) {
+
+        return;
+      }
+
+      Gdx.input.setInputProcessor(this.getObjControle());
+    }
+    catch (Exception ex) {
+
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
+
+  private void inicializarLocal() {
+
+    try {
+
+      this.inicializarControle();
+    }
+    catch (Exception ex) {
+
+      new Erro("Erro inesperado.\n", ex);
+    }
+    finally {
+    }
+  }
 
   @Override
   public void render() {

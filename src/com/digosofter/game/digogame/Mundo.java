@@ -132,7 +132,10 @@ public abstract class Mundo extends Objeto implements Disposable {
     return _booAplicarFisica;
   }
 
-  protected abstract String getDirTmxMap();
+  protected String getDirTmxMap() {
+
+    return null;
+  }
 
   private Hud getHud() {
 
@@ -414,8 +417,7 @@ public abstract class Mundo extends Objeto implements Disposable {
 
       this.inicializarMap();
 
-      // TODO: Terminar hub para sistema Android.
-      // this.inicializarHud();
+      this.inicializarHud();
     }
     catch (Exception ex) {
 
@@ -433,7 +435,7 @@ public abstract class Mundo extends Objeto implements Disposable {
 
     try {
 
-      this.getHud().inicializar();
+      // this.getHud().inicializar();
     }
     catch (Exception ex) {
 
@@ -636,6 +638,11 @@ public abstract class Mundo extends Objeto implements Disposable {
       this.getObjSpriteBatch().begin();
 
       for (Elemento elm : this.getLstElm()) {
+
+        if (elm == null) {
+
+          continue;
+        }
 
         elm.render(this.getObjSpriteBatch());
       }
